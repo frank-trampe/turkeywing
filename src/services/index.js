@@ -9,7 +9,6 @@ const agency = require('./agency');
 const authority = require('./authority');
 const organization = require('./organization');
 const userOverlay = require('./user_overlay');
-const organizations = require('./organizations');
 const authentication = require('./authentication');
 const user = require('./user');
 const uploads = require('./uploads');
