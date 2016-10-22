@@ -13,8 +13,10 @@ const bodyParser = require('body-parser');
 const socketio = require('feathers-socketio');
 const middleware = require('./middleware');
 const services = require('./services');
+const orgpriv = require('orgpriv');
 
 const app = feathers();
+app.security = orgpriv.create(app);
 
 app.configure(configuration(path.join(__dirname, '..')));
 

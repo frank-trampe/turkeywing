@@ -11,7 +11,7 @@ const organization = require('./organization');
 const userOverlay = require('./user_overlay');
 const authentication = require('./authentication');
 const user = require('./user');
-const uploads = require('./upload');
+const upload = require('./upload');
 
 module.exports = function() {
   const app = this;
