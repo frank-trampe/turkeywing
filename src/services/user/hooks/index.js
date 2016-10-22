@@ -3,7 +3,8 @@
 const globalHooks = require('../../../hooks');
 const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication').hooks;
-
+const aggr_user_data = require('./aggr_user_data');
+const create_overlay = require('./create_overlay')
 exports.before = {
   all: [],
   find: [
@@ -43,9 +44,15 @@ exports.before = {
 exports.after = {
   all: [hooks.remove('password')],
   find: [],
-  get: [],
-  create: [],
-  update: [],
+  get: [
+      aggr_user_data,
+  ],
+  create: [
+      create_overlay,
+  ],
+  update: [
+      create_overlay,
+  ],
   patch: [],
   remove: []
 };
