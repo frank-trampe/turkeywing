@@ -39,6 +39,7 @@ module.exports = function (options) {
             }
         }
 
+
         return Promise.all(user_private_overlay_schemas).then(function (schemas) {
             if (schemas.length() > 0) {
                 var schema = schemas[0];
