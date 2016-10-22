@@ -9,7 +9,7 @@ module.exports = function() {
   // just like Express the order matters, so error
   // handling middleware should go last.
   const app = this;
-
+  app.post('/signup', signup(app));
   app.use(notFound());
   app.use(logger(app));
   app.use(handler());
