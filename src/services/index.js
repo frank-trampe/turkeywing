@@ -11,7 +11,7 @@ const organization = require('./organization');
 const userOverlay = require('./user_overlay');
 const authentication = require('./authentication');
 const user = require('./user');
-const uploads = require('./uploads');
+const uploads = require('./upload');
 
 module.exports = function() {
   const app = this;
@@ -29,5 +29,5 @@ module.exports = function() {
   app.configure(specificService);
   app.configure(generalNote);
   app.configure(userPrivateOverlay);
-  app.configure(uploads);
+  app.configure(upload);
 };
