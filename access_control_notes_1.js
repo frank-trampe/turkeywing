@@ -74,10 +74,10 @@ security.schema = {
 		fields: {
 			_id: {type: 'string', is_primary_key: true, user_writable: 0},
 			/* This is the user that the overlay describes. */
-			user_id: {type: 'string', required: 1, validation: 'alpha_dash', target_class: 'users', human_name: "User ID"},
-			name_first: {type: 'string', required: 1, validation: 'alpha_dash', human_name: "First Name"},
-			name_middle: {type: 'string', required: 1, validation: 'alpha_dash', human_name: "Middle Name"},
-			name_last: {type: 'string', required: 1, validation: 'alpha_dash', human_name: "Last Name"},
+			user_id: {type: 'string', required: 1, validation: 'alpha_dash|required|min:1', target_class: 'users', human_name: "User ID"},
+			name_first: {type: 'string', required: 1, validation: 'alpha_dash|required', human_name: "First Name"},
+			name_middle: {type: 'string', required: 1, validation: 'alpha_dash|required', human_name: "Middle Name"},
+			name_last: {type: 'string', required: 1, validation: 'alpha_dash|required|min:1', human_name: "Last Name"},
 			created_at: {type: 'date', user_writable: 0},
 			created_by: {type: 'string', target_class: 'users', user_writable: 0}
 		}
@@ -89,10 +89,10 @@ security.schema = {
 		strict: 0,
 		fields : {
 			_id: {type: 'string', is_primary_key: true, user_writable: 0},
-			user_id: {type: 'string', required: 1, validation: 'alpha_dash', target_class: 'users', human_name: "User ID"},
-			user_overlay_id: {type: 'string', required: 1, validation: 'alpha_dash', target_class: 'user_overlays', human_name: "Overlay ID"},
+			user_id: {type: 'string', required: 1, validation: 'alpha_dash|required|min:1', target_class: 'users', human_name: "User ID"},
+			user_overlay_id: {type: 'string', required: 1, validation: 'alpha_dash|required|min:1', target_class: 'user_overlays', human_name: "Overlay ID"},
 			/* This sets the organization that owns the overlay. The organization gets access regardless of authority records. */
-			organization_id: {type: 'string', required: 1, validation: 'alpha_dash', target_class: 'organizations', human_name: "Organization ID"},
+			organization_id: {type: 'string', required: 1, validation: 'alpha_dash|required|min:1', target_class: 'organizations', human_name: "Organization ID"},
 			created_at: {type: 'date', user_writable: 0},
 			created_by: {type: 'string', target_class: 'users', user_writable: 0}
 		}
@@ -106,7 +106,7 @@ security.schema = {
 			_id: {type: 'string', is_primary_key: true, user_writable: 0},
 			schema: {type: 'object'},
 			/* This sets the organization that owns the overlay. The organization gets access regardless of authority records. */
-			organization_id: {type: 'string', required: 1, validation: 'alpha_dash', target_class: 'organizations', human_name: "Organization ID"},
+			organization_id: {type: 'string', required: 1, validation: 'alpha_dash|required|min:1', target_class: 'organizations', human_name: "Organization ID"},
 			created_at: {type: 'date', user_writable: 0},
 			created_by: {type: 'string', target_class: 'users', user_writable: 0}
 		}
@@ -115,7 +115,7 @@ security.schema = {
 		strict: 1,
 		fields : {
 			_id: {type: 'string', is_primary_key: true, user_writable: 0},
-			name: {type: 'string', required: 1, validation: 'alpha_dash', human_name: "Name"},
+			name: {type: 'string', required: 1, validation: 'alpha_dash|required|min:1', human_name: "Name"},
 			is_provider: {type: 'number', human_name: "Is Provider"}
 		}
 	},
@@ -123,9 +123,9 @@ security.schema = {
 		strict: 1,
 		fields : {
 			_id: {type: 'string', is_primary_key: true, user_writable: 0},
-			name: {type: 'string', required: 1, validation: 'alpha_dash', human_name: "Name"},
+			name: {type: 'string', required: 1, validation: 'alpha_dash|required|min:1', human_name: "Name"},
 			/* This is the organization that provides/owns the service. */
-			organization_id: {type: 'string', required: 1, validation: 'alpha_dash', target_class: 'organizations', human_name: "Organization ID"},
+			organization_id: {type: 'string', required: 1, validation: 'alpha_dash|required|min:1', target_class: 'organizations', human_name: "Organization ID"},
 			location_latitude: {type: 'number', human_name: "Latitude"},
 			location_longitude: {type: 'number', human_name: "Longitude"},
 			/* Start and end times are relative to the day in question in the time zone of the location. */
@@ -136,6 +136,14 @@ security.schema = {
 			/* This is the number of people that each instance of the service can accommodate. */
 			capacity: {type: 'number', human_name: "Capacity"},
 			no_overbooking: {type: 'number', human_name: "No Overbooking"},
+			/* This is a bitfield. 1 for men, 2 for women, 4 for other. Combine as necessary. */
+			sex: {type: 'number', required: 1, allow_null: 1, human_name: "Sex"},
+			/* If the age window is defined, the service is restricted to people whose age fits in the window. */
+			age_start: {type: 'date', required: 1, allow_null: 1, human_name: "Minimum Age"},
+			age_end: {type: 'date', required: 1, allow_null: 1, human_name: "Maximum Age"},
+			/* If the service window is defined, the service is restricted to people whose service overlaps the window. */
+			military_service_start: {type: 'date', required: 1, allow_null: 1, human_name: "Military Service Window Start"},
+			military_service_end: {type: 'date', required: 1, allow_null: 1, human_name: "Military Service Window Start"},
 			created_at: {type: 'date', user_writable: 0},
 			created_by: {type: 'string', target_class: 'users', user_writable: 0},
 			destroyed_at: {type: 'date', user_writable: 0},
@@ -429,8 +437,8 @@ security.hookReadLock = function (hook) {
 		}
 	);
 	return hook;
-}
-function hookWriteLock(hook) {
+};
+security.hookWriteLock = function (hook) {
 	// This takes out the application-wide write lock and stashes the unlock function.
 	hook.app.security.lock.writeLock(
 		function (release) {
@@ -438,14 +446,25 @@ function hookWriteLock(hook) {
 		}
 	);
 	return hook;
-}
-function hookUnlock(hook) {
+};
+security.hookUnlock = function (hook) {
 	// This uses the stashed unlock function to release the application-wide lock.
 	if ('lock_r' in hook.app.security) {
 		hook.lock_r();
 	}
 	return hook;
+};
+
+function orgprivCreate(app) {
+	var rv = {};
+	for (var el in security) {
+		rv[el] = security[el];
+	}
+	rv['app'] = app;
+	return rv;
 }
+
+exports = module.exports = {create: orgprivCreate, doWithLock: security.doWithLock, hookReadLock: security.hookReadLock, hookWriteLock: security.hookWriteLock, hookUnlock: security.hookUnlock};
 
 // We need more hooks.
 // The hooks register in src/services/(service_name)/hooks/index.js.
