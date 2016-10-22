@@ -1,0 +1,184 @@
+// Copyright 2016 by Frank Trampe
+
+// The agency table maps users to their privileges over organizations.
+// Fields are user_id, organization_id, access_level, created_at, created_by, destroyed_at, destroyed_by.
+// The authority table maps users and organizations to records.
+// Fields are accessor_class, accessor_id, target_class, target_id, access_level, created_at, created_by, destroyed_at, destroyed_by.
+
+security = {};
+
+security.validateInputData = function(app, schema, input, strict) {
+	// Check that required fields are present.
+	var tkey;
+	for (tkey in schema) {
+		if ('required' in tkey && tkey.required && !(tkey in input))
+			return Promise.reject(new Error("Missing field."));
+	}
+	// Validate each field.
+	var checks = [];
+	for (tkey in input) {
+		if (tkey in schema) {
+			if (input[tkey] == null) {
+				if ('allow_null' in schema[ikey] && schema[ikey].allow_null) { } else {
+					checks.push(Promise.reject(new Error("Null field.")));
+					pass;
+				}
+			} else if ('type' in schema[ikey]) {
+				if (typeof(input[ikey]) != schema[ikey].type) {
+					checks.push(Promise.reject(new Error("Mismatched field type.")));
+					pass;
+				}
+			}
+			if (1 && 'user_writable' in schema[ikey] && !(schema[ikey].user_writable)) {
+				checks.push(Promise.reject(new Error("Cannot write this field.")));
+				pass;
+			}
+			if ('validation' in schema[ikey]) {
+				// Use feathers-validator.
+				var tvalidator = new Validator(data, schema);
+				var terrs = tvalidator.errors();
+				if (terrs.length > 0) {
+					checks.push(Promise.reject(new Error("Validation error.")));
+					pass;
+				}
+			}
+			if ('target_class' in schema[ikey]) {
+				// Check that a pointed record exists.
+				checks.push(app.service(schema[ikey].target_class).get(input[ikey]));
+			}
+		} else if (strict) {
+			// For now, reject any record with a field not defined in the schema.
+			checks.push(Promise.reject(new Error("Extraneous field.")));
+		} 
+	}
+};
+//  user_id, organization_id, access_level, created_at, created_by, destroyed_at, destroyed_by.
+{accessor_class: {type: 'string', required: 1, is_class: 1}, accessor_id: {type: 'string', required: 1}, target_class: {type: 'string', required: 1, is_class: 1}, target_id: {type: 'string', required: 1}, access_level: {type: 'number', required: 1}, created_at: {type: 'date', user_writable: 0}, created_by: {type: 'string', target_class: 'users', user_writable: 0}, destroyed_at: {type: 'date', user_writable: 0}, destroyed_by: {type: 'string', target_class: 'users', user_writable: 0}
+// Levels
+// 2 read.
+// 4 write.
+// 8 control.
+// Users and authorities are special cases.
+// We will not access-check authorities.
+// We will allow any user with agency over any organization so see all users.
+
+security.validateInput = function(class_name, input) {
+	return this.validateInputData(this.app, this.schema['class_name'].fields, input, this.schema['class_name'].strict);
+}
+
+security.schema = {
+	overlay: {
+		/* This stores basic user information. But it has a time stamp, and we always use the most recent data. */
+		/* These records are shared among all service providers. */
+		strict: 1, /* This means to disallow non-listed fields. */
+		fields: {
+			_id: {type: 'string', is_primary_key: true, user_writable: 0},
+			/* This is the user that the overlay describes. */
+			user_id: {type: 'string', required: 1, validation: 'alpha_dash', target_class: 'users', human_name: "User ID"},
+			name_first: {type: 'string', required: 1, validation: 'alpha_dash', human_name: "First Name"},
+			name_middle: {type: 'string', required: 1, validation: 'alpha_dash', human_name: "Middle Name"},
+			name_last: {type: 'string', required: 1, validation: 'alpha_dash', human_name: "Last Name"},
+			created_at: {type: 'date', user_writable: 0},
+			created_by: {type: 'string', target_class: 'users', user_writable: 0},
+		}
+	},
+	priv_overlay: {
+		/* This stores user information specific to a collecting organization. */
+		/* It is always generated in parallel with a general overlay, so it references that overlay. */
+		/* It has the strict flag set to 0, so it can have whatever fields the creator likes.
+		strict: 0,
+		fields : {
+			_id: {type: 'string', is_primary_key: true, user_writable: 0},
+			user_id: {type: 'string', required: 1, validation: 'alpha_dash', target_class: 'users', human_name: "User ID"},
+			overlay_id: {type: 'string', required: 1, validation: 'alpha_dash', target_class: 'overlays', human_name: "Overlay ID"},
+			/* This sets the organization that owns the overlay. The organization gets access regardless of authority records. */
+			organization_id: {type: 'string', required: 1, validation: 'alpha_dash', target_class: 'organizations', human_name: "Organization ID"}
+		}
+	},
+	organization: {
+		strict: 1,
+		fields : {
+			_id: {type: 'string', is_primary_key: true, user_writable: 0},
+			name: {type: 'string', required: 1, validation: 'alpha_dash', human_name: "Name"},
+			is_provider: {type: 'number', human_name: "Is Provider"}
+		}
+	},
+	general_service: {
+		strict: 1,
+		fields : {
+			_id: {type: 'string', is_primary_key: true, user_writable: 0},
+			name: {type: 'string', required: 1, validation: 'alpha_dash', human_name: "Name"},
+			/* This is the organization that provides/owns the service. */
+			organization_id: {type: 'string', required: 1, validation: 'alpha_dash', target_class: 'organizations', human_name: "Organization ID"},
+			location_latitude: {type: 'number', human_name: "Latitude"},
+			location_longitude: {type: 'number', human_name: "Longitude"},
+			/* Start and end times are relative to the day in question in the time zone of the location. */
+			start_time: {type: 'date', user_writable: 1, human_name: "Start Time"},
+			end_time: {type: 'date', user_writable: 1, human_name: "End Time"},
+			/* This is a bitfield of seven entries. */
+			recur_weekdays: {type: 'number', human_name: "Days Available"},
+			created_at: {type: 'date', user_writable: 0},
+			created_by: {type: 'string', target_class: 'users', user_writable: 0},
+			destroyed_at: {type: 'date', user_writable: 0},
+			destroyed_by: {type: 'string', target_class: 'users', user_writable: 0}
+		}
+	}		
+};
+
+// TODO: Unify the security functions into an object.
+// require that object into the app as app.security.
+// Add the schema to security as app.security.schema.
+// Add a function for user-access-user logic. If the accessing user has agency over a service provider organization and the accessed user has no agency, the accessing user can set/reset account information for the accessed user.
+// Add a function that validates/authorizes user changes.
+// Add a service that provides schema.
+// Make hooks.
+
+var checkAuthority = function(accClass, accId, tClass, tId) {
+	var thisC = this;
+	// I always control myself.
+	if (accClass == tClass && accId == tId) return Promise.resolve(1 | 2 | 4 | 8);
+	// Find authority records.
+	return thisC.app.service('authorities').find({query: {accessor_class: accClass, accessor_id: accId, target_class: tClass, target_id: tId, destroyed_at: null}}).then(
+		function (rvs) {
+			var priv = 0;
+			rvs.forEach(
+				function (val, ind, arr) {
+					priv |= val.access_level;
+				}
+			);
+			return Promise.resolve(priv);
+		}, function (err) { return Promise.reject(err); }
+	);
+}
+
+var checkAgencyAuthority = function(userId, tClass, tId) {
+	var thisC = this;
+	// Find all active agency relationships for the user.
+	return thisC.app.service('agencies').find({query: {user_id: userId, destroyed_at: null}}).then(
+		function (rvs) {
+			// For each organization over which the user has agency, find its authority over the target.
+			var privs = [];
+			rvs.forEach(
+				function (val, ind, arr) {
+``					privs.push(thisC.checkAuthority('organizations', val.organization_id, tClass, tId).then(
+						function (rv) { return Promise.resolve(rv & val.access_level); },
+						function (err) { return Promise.reject(err); }
+					);
+				}
+			);
+			return Promise.all(privs).then(
+				function (rvs) {
+					var priv = 0;
+					rvs.forEach(
+						function (val, ind, arr) {
+							priv |= val;
+						}
+					);
+					return Promise.resolve(priv);
+				}
+			);
+		}
+	);
+}
+
+// Users can be service providers or recipients.
