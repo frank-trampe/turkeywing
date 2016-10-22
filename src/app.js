@@ -14,9 +14,11 @@ const socketio = require('feathers-socketio');
 const middleware = require('./middleware');
 const services = require('./services');
 const orgpriv = require('orgpriv');
+const rwlock = require('rwlock');
 
 const app = feathers();
 app.security = orgpriv.create(app);
+app.lock = new rwlock();
 
 app.configure(configuration(path.join(__dirname, '..')));
 
