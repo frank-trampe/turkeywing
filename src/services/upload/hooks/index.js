@@ -23,6 +23,7 @@ exports.before = {
     		const uri = dauria.getBase64DataURI(file.buffer, file.mimetype);
     		hook.data = {uri: uri};
     	}
+	return Promise.resolve(hook);
     }
   ],
   update: [
