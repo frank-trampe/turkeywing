@@ -1,4 +1,6 @@
 'use strict';
+const userPrivateOverlay = require('./user_private_overlay');
+const generalNote = require('./general_note');
 const specificService = require('./specific_service');
 const vulnerabilitySurvey = require('./vulnerability_survey');
 const serviceUseCommitment = require('./service_use_commitment');
@@ -25,4 +27,6 @@ module.exports = function() {
   app.configure(serviceUseCommitment);
   app.configure(vulnerabilitySurvey);
   app.configure(specificService);
+  app.configure(generalNote);
+  app.configure(userPrivateOverlay);
 };
