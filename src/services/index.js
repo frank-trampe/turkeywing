@@ -1,4 +1,5 @@
 'use strict';
+const schemaref = require('./schemaref');
 const userPrivateOverlay = require('./user_private_overlay');
 const generalNote = require('./general_note');
 const specificService = require('./specific_service');
@@ -30,4 +31,5 @@ module.exports = function() {
   app.configure(generalNote);
   app.configure(userPrivateOverlay);
   app.configure(upload);
+  app.configure(schemaref);
 };
