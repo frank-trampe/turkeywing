@@ -7,7 +7,9 @@
     "token": {
       "secret": "nZ86QLdSUhhYxfOO7b85xjbbkpg5hFz5DJ34CD1NVUyH3Te4a2w0ZFCZxNTYimPafVSoTbTYXCxL54+fXlnbzw=="
     },
-    "local": {}
+    "local": {},
+    "successRedirect": "/organizations/",
+    "cookie": "1970-01-01T00:30:00.000Z"
   },
   "corsWhitelist": []
 }
