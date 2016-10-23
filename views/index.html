@@ -1,0 +1,116 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+
+<head>
+  <!-- Mapbox -->
+  <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.26.0/mapbox-gl.js'></script>
+  <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.26.0/mapbox-gl.css' rel='stylesheet' />
+  <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <!--<script type="text/javascript" src="/js/map.js"></script>-->
+</head>
+
+
+<div class="shader" id="background-shader"> </div>
+<div id='map'></div>
+<div class="container">
+
+  <div class="section no-pad-bot" id="index-banner">
+
+      <br><br>
+       <div class="row summary-row">
+         <!-- PERFORMENCE METRICS DASH -->
+         <div class="col s12 summary-col"> <p> Welcome back <b>provider</b>!
+           <div class="row">
+            <div class="col s4"> <br> <a class="waves-effect waves-light btn">Search</a></div>
+            <div class="col s2"> <h4>12</h4> <p> NEW ENTRIES </p>  </div>
+            <div class="col s2"> <h4>48</h4> <p>BEDS OPEN <p> </div>
+            <div class="col s2"> <h4>48</h4> <p>AGENTS ACTIVE <p> </div>
+            <div class="col s2"> <h4>300</h4> <p>TOTAL CLIENTS </p>  </div>
+
+
+          </div>
+         </div>
+         <div class="col s6 newsfeed-col"> <p> Recent updates </p>
+           <!-- LIST -->
+           <ul class="collection">
+             <li class="collection-item avatar">
+               <i class="material-icons circle green">insert_chart</i>
+               <span class="title">Title</span>
+               <p>First Line <br>
+                  Second Line
+               </p>
+               <a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>
+             </li>
+            <li class="collection-item avatar">
+              <i class="material-icons circle">folder</i>
+              <span class="title">Title</span>
+              <p>First Line <br>
+                 Second Line
+              </p>
+              <a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>
+            </li>
+            <li class="collection-item avatar">
+              <i class="material-icons circle green">insert_chart</i>
+              <span class="title">Title</span>
+              <p>First Line <br>
+                 Second Line
+              </p>
+              <a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>
+            </li>
+            <li class="collection-item avatar">
+              <i class="material-icons circle red">play_arrow</i>
+              <span class="title">Title</span>
+              <p>First Line <br>
+                 Second Line
+              </p>
+              <a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>
+            </li>
+           </ul>
+         </div>
+         <div class="col s6 clients-col"> <p> Clients in need </p>
+           <!-- LIST -->
+           <ul class="collection">
+             <li class="collection-item avatar">
+               <i class="material-icons circle green">insert_chart</i>
+               <span class="title">Title</span>
+               <p>First Line <br>
+                  Second Line
+               </p>
+               <a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>
+             </li>
+            <li class="collection-item avatar">
+              <i class="material-icons circle">folder</i>
+              <span class="title">Title</span>
+              <p>First Line <br>
+                 Second Line
+              </p>
+              <a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>
+            </li>
+            <li class="collection-item avatar">
+              <i class="material-icons circle green">insert_chart</i>
+              <span class="title">Title</span>
+              <p>First Line <br>
+                 Second Line
+              </p>
+              <a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>
+            </li>
+            <li class="collection-item avatar">
+              <i class="material-icons circle red">play_arrow</i>
+              <span class="title">Title</span>
+              <p>First Line <br>
+                 Second Line
+              </p>
+              <a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>
+            </li>
+           </ul>
+         </div>
+
+
+      <br><br>
+
+    </div>
+  </div>
+
+</div>
+{% endblock %}

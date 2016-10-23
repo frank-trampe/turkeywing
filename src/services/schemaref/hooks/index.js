@@ -7,7 +7,7 @@ const auth = require('feathers-authentication').hooks;
 exports.before = {
   all: [
   ],
-  find: [],
+  find: [hooks.disable()],
   get: [ function (hook) {
     if (hook.id in hook.app.security.schema) {
       hook.result = {
@@ -17,10 +17,10 @@ exports.before = {
     }
     return Promise.reject(new Error("No such schema."));
   }],
-  create: [],
-  update: [],
-  patch: [],
-  remove: []
+  create: [hooks.disable()],
+  update: [hooks.disable()],
+  patch: [hooks.disable()],
+  remove: [hooks.disable()]
 };
 
 exports.after = {

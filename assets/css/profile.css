@@ -1,0 +1,11 @@
+#profile-banner {
+	background-color: rgba(0,0,0,0.05);
+	height: 300px;
+}
+#person-info-banner {
+	background-color: rgba(0,0,0,0.00);
+}
+.collection {
+	padding-top: 50px;
+	border: 0px;
+}

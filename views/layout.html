@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Path Home</title>
+    <link href="/css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="/css/layout-style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+    <script src="https://use.fontawesome.com/8f5dacf368.js"></script>
+</head>
+<body>
+  <ul class="side-nav fixed">
+    <li><a href="sass.html"><i class="material-icons">search</i></a></li>
+        <li><a href="badges.html"><i class="material-icons">view_module</i></a></li>
+        <li><a href="collapsible.html"><i class="material-icons">refresh</i></a></li>
+        <li><a href="mobile.html"><i class="material-icons">more_vert</i></a></li>
+  </ul>
+
+  <ul class="side-nav fixed" id="people-list">
+    <li class="center">Clients</li>
+    <li><div class="divider"></div></li>
+    <li><a class="subheader">Person</a></li>
+    <li class="active"><a href="/profile/vispdat" class="subheader">Selected Person</a></li>
+    <li><a class="subheader">Person</a></li>
+    <li><a class="subheader">Person</a></li>
+    <li><a class="subheader">Person</a></li>
+  </ul>
+
+
+  <div id="main-section-container" class="container">
+    {% block body %}
+    {% endblock %}
+  </div>
+
+  <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
+      <script type="text/javascript" src="/js/profile.js"></script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{% extends 'profile.html' %}
+
+{% block tab %}
+
+<p>assuming user has VISPIDAT</p>
+
+{% for item in fields %}
+	<p> {{ item.human_name }}  </p>
+{% endfor %}
+
+<p> {{fields.hours_helping_2.human_name}} </p>
+
+{% endblock %}

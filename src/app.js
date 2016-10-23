@@ -1,6 +1,7 @@
 'use strict';
 
 const path = require('path');
+const express = require('express');
 const serveStatic = require('feathers').static;
 const favicon = require('serve-favicon');
 const compress = require('compression');
@@ -15,6 +16,8 @@ const middleware = require('./middleware');
 const services = require('./services');
 const orgpriv = require('orgpriv');
 const rwlock = require('rwlock');
+const nunjucks = require('nunjucks');
+const index = require('../routes/index');
 
 const app = feathers();
 app.security = orgpriv.create(app);
@@ -30,17 +33,43 @@ const corsOptions = {
   }
 };
 
+const spdat_callback = function (req, res, next) {
+  const schemarefService = app.service('/schemarefs');
+  app.service('/schemarefs').get('user_overlays').then(function (params) {
+    console.log(params.schema.fields);
+    res.render('vi-spdat.html', { fields: params.schema.fields });
+  });
+
+}
+
+// Set up Nunjucks
+var env = nunjucks.configure('views', {
+    autoescape: true,
+    express: app
+});
+
+// Global template variables
+env.addFilter('println', function(str) {
+  console.log(str);
+});
+
 app.use(compress())
   .options('*', cors(corsOptions))
   .use(cors(corsOptions))
   .use(favicon( path.join(app.get('public'), 'favicon.ico') ))
-  .use('/', serveStatic( app.get('public') ))
+  .use('/vi-spdat', spdat_callback)
   .use(bodyParser.json())
   .use(bodyParser.urlencoded({ extended: true }))
   .configure(hooks())
   .configure(rest())
   .configure(socketio())
   .configure(services)
-  .configure(middleware);
+  .use(express.static('assets'))
+  .use('/', index);
+
+
+/*app.get('/', function (req, res, next) {
+  res.render('index.html');
+});*/
 
 module.exports = app;
